@@ -41,3 +41,55 @@ class PathExporter:
                 line += "\n"
                 f.write(line)
                 time += max_duration
+
+    @staticmethod
+    def export_path_multiple_notes(path, filename):
+        with open(filename, 'w') as f:
+            time = 0
+            for configuration in path:
+                max_duration = 0
+                durations = configuration.get_all_coordinates()[:configuration.get_voices()]
+                pitches = configuration.get_all_coordinates()[configuration.get_voices():]
+                curr_time_0 = 0
+                curr_index_0 = 0
+                curr_index_1 = 0
+                curr_time_1 = 0
+                while curr_index_0 < len(durations[0]) and curr_index_1 < len(durations[1]):
+                    if curr_time_1 == curr_time_0:
+                        line = "T: %d " % time
+                        pitch_0 = pitches[0][curr_index_0]
+                        pitch_1 = pitches[1][curr_index_1]
+                        duration_0 = pitches[0][curr_index_0]
+                        duration_1 = pitches[1][curr_index_1]
+                        line += "|%d %d |%d %d " % (pitch_0, pitch_1, duration_0, duration_1)
+                        line += "\n"
+                        f.write(line)
+                        curr_time_0 += duration_0
+                        curr_time_1 += duration_1
+                        curr_index_0 += 1
+                        curr_index_1 += 1
+                        if duration_0 < duration_1:
+                            time += duration_0
+                        else:
+                            time += duration_1
+                    elif curr_time_1 > curr_time_0:
+                        line = "T: %d " % time
+                        pitch_1 = pitches[1][curr_index_1]
+                        duration_1 = pitches[1][curr_index_1]
+                        line += "|%d %d" % (pitch_1, duration_1)
+                        line += "\n"
+                        f.write(line)
+                        curr_time_1 += duration_1
+                        curr_time_1 += 1
+                        time += duration_1
+                    else:
+                        line = "T: %d" % time
+                        pitch_0 = pitches[0][curr_index_0]
+                        duration_0 = pitches[0][curr_index_0]
+                        line += "|%d %d" % (pitch_0, duration_0)
+                        line += "\n"
+                        f.write(line)
+                        curr_time_0 += duration_0
+                        curr_time_0 += 1
+                        time += duration_0
+

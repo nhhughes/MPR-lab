@@ -49,21 +49,17 @@ generator = ComplexConfigurationGenerator(d_means, d_variances, p_means, p_varia
 pitch_checker = PitchChecker.from_configuration_generator(generator)
 duration_checker = DurationChecker.from_configuration_generator(generator)
 collision_checker = CollisionChecker(pitch_checker, duration_checker, [1, 1], 1)
-collision_checker.enable_verbose()
-pitch_checker.enable_verbose()
-duration_checker.enable_verbose()
 roadmap_builder = CSpaceSampler.from_configuration_generator(generator, collision_checker)
 prm = roadmap_builder.build_prm(5, 10)
-print prm.nodes()
-# planner = PathPlanner(prm)
-# path = []
-# edge_ratio = 0.1
-# while len(prm.edges()) > edge_ratio*len(prm.nodes()):
-#     try:
-#         path = planner.generate_path(random.choice(prm.nodes()), random.choice(prm.nodes()))
-#         break
-#     except ValueError:
-#         pass
-#
-# exporter = PathExporter()
-# exporter.export_path(path, "testing.org")
+planner = PathPlanner(prm)
+path = []
+edge_ratio = 0.1
+while len(prm.edges()) > edge_ratio*len(prm.nodes()):
+    try:
+        path = planner.generate_path(random.choice(prm.nodes()), random.choice(prm.nodes()))
+        break
+    except ValueError:
+        pass
+
+exporter = PathExporter()
+exporter.export_path(path, "../Composition_Results/run2_code.org")
